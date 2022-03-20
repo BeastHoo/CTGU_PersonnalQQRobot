@@ -1,0 +1,12 @@
+simbot:
+  core:
+    # 账号:密码，多个用逗号(,)分隔或者用yaml的多项配置
+    # bots: 账号:密码
+    bots: xxxxxxxx:xxxxxxxxxx
+  component:
+    mirai:
+      # mirai心跳周期. 过长会导致被服务器断开连接. 单位毫秒。
+      # 使用协议类型。注，此值为枚举类 net.mamoe.mirai.utils.BotConfiguration.MiraiProtocol 的元素值，
+      # 可选值为：ANDROID_PHONE、ANDROID_PAD、ANDROID_WATCH
+      protocol: ANDROID_PHONE
+      # 是否关闭mirai的bot logger
