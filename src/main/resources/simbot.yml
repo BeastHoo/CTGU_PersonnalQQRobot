@@ -2,7 +2,7 @@ simbot:
   core:
     # 账号:密码，多个用逗号(,)分隔或者用yaml的多项配置
     # bots: 账号:密码
-    bots: xxxxxxxx:xxxxxxxxxx
+    bots: aaaaaaaaa:bbbbbbbbb
   component:
     mirai:
       # mirai心跳周期. 过长会导致被服务器断开连接. 单位毫秒。

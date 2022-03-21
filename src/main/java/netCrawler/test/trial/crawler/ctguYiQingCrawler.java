@@ -52,7 +52,7 @@ public class ctguYiQingCrawler {
         URIBuilder uriBuilder= new URIBuilder("http://yiqing.ctgu.edu.cn/wx/index/loginSubmit.do");  //设置uri
         //设置账号及密码
         uriBuilder.setParameter("username","2019112128");
-        uriBuilder.setParameter("password","11111111");
+        uriBuilder.setParameter("password","aaaaaaaaaaa");
         HttpGet httpGet= new HttpGet(uriBuilder.build());
         httpGet.setConfig(config);
         //执行访问
@@ -68,7 +68,7 @@ public class ctguYiQingCrawler {
             //登录成功后的处理
             //角色切换为班级助理
             if (str.equals("success")){
-                logger.debug("登录成功，「{}」","2019112128");
+                logger.debug("登录成功，「{}」","aaaaaaaaaa");
                 return true;
             }else {
                 logger.error("登录失败，请检查账号和密码是否正确！");

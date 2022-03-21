@@ -95,20 +95,15 @@ public class ScheduledTask {
         }
 
         int dayOfWeekAfter = Integer.parseInt(dayOfWeek);
-        System.out.println("dayOfWeek:"+dayOfWeekAfter);
         int nextMondayInterval = 7 - dayOfWeekAfter + 1; //距离下次周一的天数
 
         long oneWeek = 24 * 60 * 60 * 1000 * 7;//一周
 
         String day = format.format(new Date())+" ";
         String curDay = day.substring(day.lastIndexOf("-")+1,day.length()-1);
-        System.out.println("curDay:"+curDay);
-
         int nextMonday = Integer.parseInt(curDay)+nextMondayInterval;
-        System.out.println("nextModay:"+nextMonday);
-
         day = day.replaceAll("-"+curDay+" ","-"+nextMonday);
-        System.out.println("day:"+day);
+
 //        采用距离下个周一的时间来计算
 
         String time = "00:05:00";
@@ -116,7 +111,6 @@ public class ScheduledTask {
             long timeInMillis;
             timeInMillis = simpleDateFormat.parse(day + " " + time).getTime();
             long initDelay  = timeInMillis - System.currentTimeMillis();  //>0
-            System.out.println("initDelay:"+ (initDelay/60/1000));
 //            initDelay = initDelay > 0 ? initDelay : oneWeek + initDelay;
 
             executor.scheduleAtFixedRate(
@@ -179,46 +173,50 @@ public class ScheduledTask {
         }
     }
 
-    private static void execute40MinutesBeforeClass(Queue<String> queue, MiraiBot bot){
-        System.out.println("执行课前提醒");
+
+
+    public static void execute40MinutesBeforeClass(Queue<String> queue, MiraiBot bot){
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 synchronized (this)
                 {
-                    try {
-                        JSONObject object = JSONObject.fromObject(queue.poll());
-                        int ksjc = object.getInt("KSJC");
-                        int jsjc = object.getInt("JSJC");
+                    while (!queue.isEmpty())
+                    {
+                        try {
+//                            System.out.println("开始");
+                            JSONObject object = JSONObject.fromObject(queue.poll());
+                            int ksjc = object.getInt("KSJC");
+                            int jsjc = object.getInt("JSJC");
 
-                        String kssj = map.get(ksjc);
-                        String jssj = map.get(jsjc);
-                        String day = format.format(new Date());
-                        long timeInterval = simpleDateFormat.parse(day + " " + kssj).getTime()-System.currentTimeMillis();
-                        this.wait(timeInterval);
+                            String kssj = map.get(ksjc);
+                            String jssj = map.get(jsjc);
+                            String day = format.format(new Date());
+                            long timeInterval = simpleDateFormat.parse(day + " " + kssj).getTime()-System.currentTimeMillis() - 1000*60*30;
+                            if (timeInterval<0)
+                            {
+                                continue;
+                            }
+                            System.out.println("下次提醒时间:"+(timeInterval/(1000*60))+"分钟后");
+                            this.wait(timeInterval);
+                            MiraiFriend friend = bot.getFriend(Identifies.ID("1369843192"));
+                            assert friend != null;
 
-                        MiraiFriend friend = bot.getFriend(Identifies.ID("1369843192"));
-                        assert friend != null;
+                            String info = "谦桑，您有新的课程安排：\n\n"+
+                                    " 课程名：" + object.getString("KCM") + "\n"+
+                                    "   教师：" + object.getString("SKJS") + "\n"+
+                                    "   节次：" + object.getString("KSJC") + " - " +object.getString("JSJC") + "节\n"+
+                                    "上课时间：" + kssj + " - " + jssj + "\n" +
+                                    " 教学楼：" + object.getString("JXLDM_DISPLAY") + "\n" +
+                                    "上课教室：" + object.getString("JASMC") + "\n\n"+
+                                    "播报完毕，请记得及时去上课哟~";
 
-                        String info = "谦桑，您有新的课程安排：\n\n"+
-                                " 课程名：" + object.getString("KCM") + "\n"+
-                                "   教师：" + object.getString("SKJS") + "\n"+
-                                "   节次：" + object.getString("KSJC") + " - " +object.getString("JSJC") + "节\n"+
-                                "上课时间：" + kssj + " - " + jssj + "\n" +
-                                " 教学楼：" + object.getString("JXLDM_DISPLAY") + "\n" +
-                                "上课教室：" + object.getString("JASMC") + "\n\n"+
-                                "播报完毕，请记得及时去上课哟~";
-
-                        friend.sendBlocking(info);
-                        if (!queue.isEmpty())
-                        {
-                            execute40MinutesBeforeClass_2(queue, bot);
+                            friend.sendBlocking(info);
+                        } catch (Exception e) {
+                            e.printStackTrace();
                         }
-                    } catch (Exception e) {
-                        e.printStackTrace();
                     }
-                }
-
+                    }
             }
         };
 
@@ -226,50 +224,4 @@ public class ScheduledTask {
         thread.start();
     }
 
-    private static void execute40MinutesBeforeClass_2(Queue<String> queue, MiraiBot bot){
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                synchronized (this)
-                {
-                    try {
-                        JSONObject object = JSONObject.fromObject(queue.poll());
-                        int ksjc = object.getInt("KSJC");
-                        int jsjc = object.getInt("JSJC");
-
-                        String kssj = map.get(ksjc);
-                        String jssj = map.get(jsjc);
-                        String day = format.format(new Date());
-                        long timeInterval = simpleDateFormat.parse(day + " " + kssj).getTime()-System.currentTimeMillis();
-                        this.wait(timeInterval);
-
-
-                        MiraiFriend friend = bot.getFriend(Identifies.ID("1369843192"));
-                        assert friend != null;
-
-                        String info = "谦桑，您有新的课程安排：\n\n"+
-                                " 课程名：" + object.getString("KCM") + "\n"+
-                                "   教师：" + object.getString("SKJS") + "\n"+
-                                "   节次：" + object.getString("KSJC") + " - " +object.getString("JSJC") + "节\n"+
-                                "上课时间：" + kssj + " - " + jssj + "\n" +
-                                " 教学楼：" + object.getString("JXLDM_DISPLAY") + "\n" +
-                                "上课教室：" + object.getString("JASMC") + "\n\n"+
-                                "播报完毕，请记得及时去上课哟~";
-
-                        friend.sendBlocking(info);
-
-                        if (!queue.isEmpty()){
-                            execute40MinutesBeforeClass(queue, bot);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-            }
-        };
-
-        Thread thread = new Thread(runnable);
-        thread.start();
-    }
 }

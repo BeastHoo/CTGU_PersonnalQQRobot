@@ -63,8 +63,9 @@ public class MyBotApplication {
         final ClassScheduleCrawler classScheduleCrawler = new ClassScheduleCrawler(manager);
 
         LOGGER.debug("爬虫创建成功...");
+        Map<Integer, Queue<String>> map = null;
         try {
-            Map<Integer, Queue<String>> map = classScheduleCrawler.action();
+            map = classScheduleCrawler.action();
             byte[] serialize = SerializeUtil.serialize(map);
 //            System.out.println(map.get(2).toString());
 //            将json序列化转换为Byte[]后，刷入redis
@@ -97,6 +98,13 @@ public class MyBotApplication {
         ScheduledTask.executeEightAtNightPerDay(crawler,bot);
         ScheduledTask.executeAtMidNightPerMonday(jedis,classScheduleCrawler,bot);
         ScheduledTask.executeSevenInMoriningPerDay(jedis,bot);
+        String dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)-1+"";
+        if ("0".equals(dayOfWeek))
+        {
+            dayOfWeek = "7";
+        }
+        int dayOfWeekAfter = Integer.parseInt(dayOfWeek);
+        ScheduledTask.execute40MinutesBeforeClass(map.get(dayOfWeekAfter),bot);
 
         // 此处给一个账号发送一句话
         final MiraiFriend friend = bot.getFriend(Identifies.ID(1369843192));

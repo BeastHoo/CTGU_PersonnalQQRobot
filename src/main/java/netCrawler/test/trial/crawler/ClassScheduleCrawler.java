@@ -65,12 +65,12 @@ public class ClassScheduleCrawler {
     private boolean LoginJWC() throws Exception{
         URIBuilder uriBuilder = new URIBuilder("http://jwxt.ctgu.edu.cn/jwapp/sys/emapfunauth/loginValidate.do");
         //学号
-        uriBuilder.addParameter("userName","2222222");
+        uriBuilder.addParameter("userName","aaaaaaaaaaaaaaa");
         //加密过的登录密码，由于不知道加密方法，所可以需要自家抓包
         //推荐使用fiddler，也可以打开浏览器的调试器，点击网络(network) 然后在所有链接里找到/jwapp/sys/emapfunauth/loginValidate.do
         //就可以在payload里面找到
         //不过因为教务处网页登录后是在当前网页跳转，所以通过调试器拿到加密后的密码有难度
-        uriBuilder.addParameter("password","11111111");
+        uriBuilder.addParameter("password","aaaaaaaaaaaaaaaaaa");
         uriBuilder.addParameter("isWeekLogin","false");
 
         HttpPost httpPost = new HttpPost(uriBuilder.build());
